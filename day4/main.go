@@ -46,36 +46,41 @@ func main() {
 	// playing the actual bingo
 	// Rules.: The numbers are drawn from the bingo pocket, and the player that completes a row or a collumn
 	// 		   first wins.
-	var lastBingoDrawn string
-	var winnerId int = func() int {
-		for _, bingoNum := range bingo {
-			lastBingoDrawn = bingoNum
+
+	// will hold a snapshot of a player board when that won
+	var scoreBoard = make(map[int]Board)
+	var winnerPlace = 0
+	// holds the numbers that each player drawn when they won
+	var lastBingoDrawn []string
+	func() {
+		for i := 0; i < len(bingo); i++ {
+			bingoNum := bingo[i]
 			winnerId, won := markBoards(playersBoard, bingoNum)
 			if won {
-				return winnerId
+				lastBingoDrawn = append(lastBingoDrawn, bingoNum)
+				scoreBoard[winnerPlace] = playersBoard[winnerId]
+				delete(playersBoard, winnerId)
+				winnerPlace++
+				// we check gain if any other board wins with that number
+				i--
 			}
 		}
-		return -1 // never happens
 	}()
 
-	// calculate result:
-	// sum of all unused cells * last number drawn
-	sum := 0
-	for _, row := range playersBoard[winnerId] {
-		for _, cell := range row {
-			/*
-				Some fields are marked with "x" so parsing errors are expected, and the default
-				val of 0 is exactly what we want in the sum.
-			*/
-			val, _ := strconv.Atoi(cell)
-			sum += val
-		}
-	}
-	lastBingo, err := strconv.Atoi(lastBingoDrawn)
-	if err != nil {
-		log.Fatalln("Error parsing last drawn Bingo number")
-	}
-	fmt.Println("Result is: ", sum*lastBingo)
+	// *** 1ST PROBLEM ***
+	firstWinner := 0
+
+	// ### 2ND PROBLEM ###
+	lastWinner := len(scoreBoard) - 1
+
+	fmt.Println(scoreBoard)
+	fmt.Println(len(lastBingoDrawn))
+
+	result1stPart := getResult(firstWinner, scoreBoard, lastBingoDrawn)
+	result2ndPart := getResult(lastWinner, scoreBoard, lastBingoDrawn)
+
+	fmt.Printf("First winner scored: %d\nLast winner scored: %d\n", result1stPart, result2ndPart)
+
 }
 
 // Check every board and mark (x) the number drawn on the bingo
@@ -128,4 +133,25 @@ func contains(strArr []string, str string) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+func getResult(playerId int, scoreBoard map[int]Board, lastBingoDrawn []string) int {
+	sum := 0
+	for _, row := range scoreBoard[playerId] {
+		for _, cell := range row {
+			/*
+				Some fields are marked with "x" so parsing errors are expected, and the default
+				val of 0 is exactly what we want in the sum.
+			*/
+			val, _ := strconv.Atoi(cell)
+			sum += val
+		}
+	}
+	lastBingo, err := strconv.Atoi(lastBingoDrawn[playerId])
+	if err != nil {
+		log.Fatalln("Error parsing last drawn Bingo number")
+	}
+	// fmt.Println("Result is: ", sum*lastBingo)
+
+	return sum * lastBingo
 }
