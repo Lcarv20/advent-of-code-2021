@@ -12,9 +12,6 @@ import (
 type HydrothermalVent = [999][999]int
 
 func main() {
-	var ventsRadar HydrothermalVent
-	var overlapingVents int = 0
-
 	file, err := os.Open("input.txt")
 	if err != nil {
 		log.Fatalln("Couldn't open the file")
@@ -25,6 +22,7 @@ func main() {
 	// split scanner by new lines
 	scanner.Split(bufio.ScanLines)
 
+	var ventsRadar HydrothermalVent
 	for scanner.Scan() {
 
 		var points []int = translateInput(scanner.Text())
@@ -38,12 +36,8 @@ func main() {
 		// It moves horizontaly
 		if x1 != x2 {
 			start, end := minMax(x1, x2)
-
 			for start <= end {
 				ventsRadar[y1][start]++
-				if ventsRadar[y1][start] >= 2 {
-					overlapingVents++
-				}
 				start++
 			}
 		}
@@ -51,32 +45,23 @@ func main() {
 		// It moves verticaly
 		if y1 != y2 {
 			start, end := minMax(y1, y2)
-
 			for start <= end {
 				ventsRadar[start][x1]++
-				if ventsRadar[start][x1] >= 2 {
-					overlapingVents++
-				}
 				start++
 			}
 		}
 
 	}
 
-	sum := 0
-
-	for _, i := range ventsRadar {
-		for _, j := range i {
-			if j >= 2 {
-				sum++
+	var overlapingVents int = 0
+	for _, y := range ventsRadar {
+		for _, x := range y {
+			if x >= 2 {
+				overlapingVents++
 			}
 		}
 	}
 
-	// this works
-	fmt.Println(sum)
-
-	// but this doesn't
 	fmt.Println(overlapingVents)
 }
 
