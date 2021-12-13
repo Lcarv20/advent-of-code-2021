@@ -35,6 +35,7 @@ func main() {
 			continue
 		}
 
+		// It moves horizontaly
 		if x1 != x2 {
 			start, end := minMax(x1, x2)
 
@@ -47,6 +48,7 @@ func main() {
 			}
 		}
 
+		// It moves verticaly
 		if y1 != y2 {
 			start, end := minMax(y1, y2)
 
@@ -61,6 +63,20 @@ func main() {
 
 	}
 
+	sum := 0
+
+	for _, i := range ventsRadar {
+		for _, j := range i {
+			if j >= 2 {
+				sum++
+			}
+		}
+	}
+
+	// this works
+	fmt.Println(sum)
+
+	// but this doesn't
 	fmt.Println(overlapingVents)
 }
 
