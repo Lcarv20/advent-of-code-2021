@@ -17,6 +17,17 @@ func main() {
 		log.Fatalln("Couldn't open the file")
 	}
 
+	// Problem identifier
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Choose problem to solve - part1 or part2")
+
+	userChoice, _ := reader.ReadString('\n')
+	userChoice = strings.Trim(userChoice, "\n")
+
+	if userChoice == "part1" {
+		fmt.Println("hole")
+	}
+
 	// Initialize scanner on input.txt file
 	scanner := bufio.NewScanner(file)
 	// split scanner by new lines
@@ -28,9 +39,23 @@ func main() {
 		var points []int = translateInput(scanner.Text())
 		x1, y1, x2, y2 := points[0], points[1], points[2], points[3]
 
-		// Ignoring diagonals
-		if x1 != x2 && y1 != y2 {
-			continue
+		if userChoice == "part1" {
+			// Ignoring all diagonals
+			if x1 != x2 && y1 != y2 {
+				continue
+			}
+		}
+		if userChoice == "part2" {
+			// to be 45 degrees x2-x1 == y2-y1
+			startX, endX := minMax(x1, x2)
+			startY, endY := minMax(y1, y2)
+
+			// check if it is 45 degrees
+			if (endX - startX) == (endY - startY) {
+				ventsRadar = paintDiagonalVent(ventsRadar, x1, y1, x2, y2)
+				continue
+			}
+
 		}
 
 		// It moves horizontaly
@@ -62,6 +87,8 @@ func main() {
 		}
 	}
 
+	// fmt.Println(ventsRadar)
+
 	fmt.Println(overlapingVents)
 }
 
@@ -88,4 +115,32 @@ func minMax(a, b int) (int, int) {
 		return a, b
 	}
 	return b, a
+}
+
+func paintDiagonalVent(ventsRadar [999][999]int, x1 int, y1 int, x2 int, y2 int) [999][999]int {
+	// fmt.Printf("[%d, %d] - [%d, %d]\n", x1, y1, x2, y2)
+	for x1 != x2 && y1 != y2 {
+		switch true {
+		case x1 < x2 && y1 < y2:
+			ventsRadar[y1][x1]++
+			x1++
+			y1++
+
+		case x1 > x2 && y1 > y2:
+			ventsRadar[y1][x1]++
+			x1--
+			y1--
+
+		case x1 < x2 && y1 > y2:
+			ventsRadar[y1][x1]++
+			x1++
+			y1--
+
+		case x1 > x2 && y1 < y2:
+			ventsRadar[y1][x1]++
+			x1--
+			y1++
+		}
+	}
+	return ventsRadar
 }
