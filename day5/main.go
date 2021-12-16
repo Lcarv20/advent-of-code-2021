@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-type HydrothermalVent = [999][999]int
+type HydrothermalVent = [1000][1000]int
 
 func main() {
 	file, err := os.Open("input.txt")
@@ -117,7 +117,7 @@ func minMax(a, b int) (int, int) {
 	return b, a
 }
 
-func paintDiagonalVent(ventsRadar [999][999]int, x1 int, y1 int, x2 int, y2 int) [999][999]int {
+func paintDiagonalVent(ventsRadar [1000][1000]int, x1 int, y1 int, x2 int, y2 int) [1000][1000]int {
 	// fmt.Printf("[%d, %d] - [%d, %d]\n", x1, y1, x2, y2)
 	for x1 != x2 && y1 != y2 {
 		switch true {
@@ -142,5 +142,6 @@ func paintDiagonalVent(ventsRadar [999][999]int, x1 int, y1 int, x2 int, y2 int)
 			y1++
 		}
 	}
+	ventsRadar[y1][x1]++
 	return ventsRadar
 }
