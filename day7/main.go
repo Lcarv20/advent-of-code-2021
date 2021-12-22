@@ -23,27 +23,32 @@ func main() {
 
 	crabsMap := processInput(scanner.Text())
 
+	// *** PART 1 ***
 	var fuelRecords []int
-
 	for destination := range crabsMap {
 		fuelSpent := 0
 		for origin, multiplier := range crabsMap {
-			fuelSpent +=
-				// calculate distance between origin and destination
-				// pkg math only works with floats, so I have to convert ints to floats,
-				// operate and then convert back to ints
-				int(
-					math.Abs(
-						float64(destination-(origin)),
-					),
-				) * multiplier
+			fuelSpent += (calculateDistance(origin, destination) * multiplier)
 		}
 		fuelRecords = append(fuelRecords, fuelSpent)
 	}
 
+	// ### PART 2 ###
+	var fuelRecords2 []int
+	for destination := range crabsMap {
+		fuelSpent := 0
+		for origin, multiplier := range crabsMap {
+			fuelSpent += (triangularDistance(origin, destination) * multiplier)
+		}
+		fuelRecords2 = append(fuelRecords2, fuelSpent)
+	}
+	//
+
 	sort.Ints(fuelRecords)
+	sort.Ints(fuelRecords2)
 
 	fmt.Println(fuelRecords[0])
+	fmt.Println(fuelRecords2[0])
 }
 
 func processInput(input string) map[int]int {
@@ -59,4 +64,20 @@ func processInput(input string) map[int]int {
 		crabMap[n]++
 	}
 	return crabMap
+}
+
+func calculateDistance(origin, destination int) int {
+	// pkg math only works with floats, so I have to convert ints to floats,
+	// operate and then convert back to ints
+	return int(
+		math.Abs(
+			float64(destination - (origin)),
+		),
+	)
+}
+
+func triangularDistance(origin, destination int) int {
+	linearDist := calculateDistance(origin, destination)
+
+	return ((linearDist * (linearDist + 1)) / 2)
 }
